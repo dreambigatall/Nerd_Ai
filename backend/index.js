@@ -42,8 +42,8 @@ app.get("/api/upload", (req, res) => {
 
 
 
-app.post("/api/chats",clerkMiddleware(), async (req, res) => {
-  const {userId} = req.auth;
+app.post("/api/chats", clerkMiddleware(), async (req, res) => {
+  const { userId } = req.auth;
   const { text } = req.body;
 
   try {
@@ -58,8 +58,8 @@ app.post("/api/chats",clerkMiddleware(), async (req, res) => {
     // CHECK IF THE USERCHATS EXISTS
     const userChats = await UserChats.find({ userId: userId });
 
-    // IF DOESN'T EXIST CREATE A NEW ONE AND ADD THE CHAT IN THE CHATS ARRAY
     if (!userChats.length) {
+      // Create new UserChats document and add the chat
       const newUserChats = new UserChats({
         userId: userId,
         chats: [
@@ -69,10 +69,9 @@ app.post("/api/chats",clerkMiddleware(), async (req, res) => {
           },
         ],
       });
-
       await newUserChats.save();
     } else {
-      // IF EXISTS, PUSH THE CHAT TO THE EXISTING ARRAY
+      // Push the chat into the existing UserChats document
       await UserChats.updateOne(
         { userId: userId },
         {
@@ -84,14 +83,49 @@ app.post("/api/chats",clerkMiddleware(), async (req, res) => {
           },
         }
       );
-
-      res.status(201).send(newChat._id);
     }
+
+    // Send the response with the chat ID regardless of branch
+    res.status(201).json({ chatId: savedChat._id });
   } catch (err) {
     console.log(err);
     res.status(500).send("Error creating chat!");
   }
 });
+
+
+
+app.get("/api/userchats", clerkMiddleware(), async (req, res) => {
+  const { userId } = req.auth;
+
+  try {
+      const userChats = await UserChats.find({ userId });
+
+      if (userChats.length === 0) {
+          return res.status(404).json({ error: "No chats found for this user" });
+      }
+
+      res.status(200).json({ chats: userChats[0].chats });
+  } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Error fetching user chats!" });
+  }
+});
+
+app.get("/api/chats/:id", clerkMiddleware(), async (req, res) => {
+  const {userId} = req.auth;
+
+  try {
+    const chat = await Chat.findOne({ _id: req.params.id, userId });
+
+    res.status(200).send(chat);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error fetching chat!");
+  }
+});
+  
+
 
 
 app.listen(port, () => {

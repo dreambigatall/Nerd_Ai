@@ -1,59 +1,72 @@
-import "./dashboardPage.css"
-import {useAuth} from "@clerk/clerk-react"
-export default function DashboardPage() {
-  const auth = useAuth();
-  const userId = auth.userId;
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const text = e.target.text.value;
-    if (!text ) return;
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import "./dashboardPage.css";
+import { useNavigate } from "react-router-dom";
 
-    try {
-      const result = await fetch("http://localhost:3000/api/chats", {
+const DashboardPage = () => {
+  const queryClient = useQueryClient();
+
+  const navigate = useNavigate();
+
+  const mutation = useMutation({
+    mutationFn: (text) => {
+      return fetch(`${import.meta.env.VITE_API_URL}/api/chats`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ text }),
-      });
-      const data = await result.json();
-      console.log(data);
-    } catch (error) {
-      console.error("Error generating content:", error);
-    }
-  };
+      }).then((res) => res.json());
+      
+    },
+    onSuccess: (data) => {
+      console.log(data); // See what the response contains
+      const chatId = data.chatId; // or data.chatId if that's how it's named
+      console.log(chatId);
+      queryClient.invalidateQueries({ queryKey: ["userChats"] });
+      navigate(`/dashboard/chats/${chatId}`);
+    },
+  });
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const text = e.target.text.value;
+    if (!text) return;
+
+    mutation.mutate(text);
+  };
   return (
     <div className="dashboardPage">
       <div className="texts">
         <div className="logo">
           <img src="/logo.png" alt="" />
-          <h1>NERD</h1>
+          <h1>LAMA AI</h1>
         </div>
         <div className="options">
           <div className="option">
             <img src="/chat.png" alt="" />
-            <span>Create A New Chat</span>
+            <span>Create a New Chat</span>
           </div>
           <div className="option">
             <img src="/image.png" alt="" />
-            <span>Analyze Image</span>
+            <span>Analyze Images</span>
           </div>
           <div className="option">
             <img src="/code.png" alt="" />
-            <span>Help me in my code</span>
+            <span>Help me with my Code</span>
           </div>
         </div>
       </div>
       <div className="formContainer">
         <form onSubmit={handleSubmit}>
-        <input type="text" name="text" placeholder="Ask your nerd quetions....." />
-        <button >
-          <img src="/arrow.png" alt="" />
-        </button>
+          <input type="text" name="text" placeholder="Ask me anything..." />
+          <button>
+            <img src="/arrow.png" alt="" />
+          </button>
         </form>
       </div>
     </div>
   );
-}
+};
+
+export default DashboardPage;

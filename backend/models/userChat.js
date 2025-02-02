@@ -1,35 +1,29 @@
 const mongoose = require('mongoose');
 
-const userChatSchema = new mongoose.Schema({
-    userId:{
-        type:String,
-        required:true
-    },
-    history:[
+const userChatsSchema = new mongoose.Schema(
+    {
+      userId: {
+        type: String,
+        required: true,
+      },
+      chats: [
         {
-            role:{
-                type:String,
-                enum:["user"|"model"],
-                required:true
-            },
-            parts:[
-                {
-                    text:{
-                        type:String,
-                        required:true
-                    }
-                }
-            ],
-            img:{
-                type:String,
-                required:false
-            }
-        }
-    ]
-},
+          _id: {
+            type: String,
+            required: true,
+          },
+          title: {
+            type: String,
+            required: true,
+          },
+          createdAt: {
+            type: Date,
+            default:Date.now()
+          },
+        },
+      ],
+    },
+    { timestamps: true }
+  );
 
-{timestamps:true}
-
-)
-
-module.exports = mongoose.model('UserChat', userChatSchema);
+module.exports = mongoose.model('UserChat', userChatsSchema);
