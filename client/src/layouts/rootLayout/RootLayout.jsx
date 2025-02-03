@@ -1,7 +1,8 @@
 import { Link, Outlet } from "react-router-dom";
 import "./rootLayout.css";
 import { ClerkProvider, SignedIn, UserButton } from "@clerk/clerk-react";
- import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 if (!PUBLISHABLE_KEY) {
@@ -13,11 +14,12 @@ const queryClient = new QueryClient();
 const RootLayout = () => {
   return (
     <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
-       <QueryClientProvider client={queryClient}> 
+      <QueryClientProvider client={queryClient}>
         <div className="rootLayout">
+          {/* Header Section */}
           <header>
             <Link to="/" className="logo">
-              <img src="/logo.png" alt="" />
+              <img src="/logo.png" alt="LAMA AI Logo" />
               <span>LAMA AI</span>
             </Link>
             <div className="user">
@@ -26,11 +28,13 @@ const RootLayout = () => {
               </SignedIn>
             </div>
           </header>
+
+          {/* Main Content Section */}
           <main>
             <Outlet />
           </main>
         </div>
-       </QueryClientProvider> 
+      </QueryClientProvider>
     </ClerkProvider>
   );
 };

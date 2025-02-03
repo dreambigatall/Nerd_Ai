@@ -14,6 +14,11 @@ const ChatList = () => {
   if (isPending) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
+  // Create a sorted copy of the chats array (newest first)
+  const sortedChats = data?.chats
+    ? [...data.chats].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    : [];
+
   return (
     <div className="chatList">
       <span className="title">DASHBOARD</span>
@@ -21,13 +26,13 @@ const ChatList = () => {
       <Link to="/">Explore Lama AI</Link>
       <Link to="/">Contact</Link>
       <div className="chats">
-        {data?.chats?.length > 0 ? (
-          data.chats.map((chat) => (
+        {sortedChats.length > 0 ? (
+          sortedChats.map((chat) => (
             <Link to={`/dashboard/chats/${chat._id}`} key={chat._id}>
-            <div key={chat._id} className="chatItem">
-              <h5>{chat.title}</h5>
-              <p>{new Date(chat.createdAt).toLocaleString()}</p>
-            </div>
+              <div className="chatItem">
+                <h5>{chat.title}</h5>
+                <p>{new Date(chat.createdAt).toLocaleString()}</p>
+              </div>
             </Link>
           ))
         ) : (
