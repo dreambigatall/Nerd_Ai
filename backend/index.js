@@ -43,9 +43,12 @@ app.get("/api/upload", (req, res) => {
 
 
 app.post("/api/chats", clerkMiddleware(), async (req, res) => {
+
+    console.log("1")
   const { userId } = req.auth;
   const { text } = req.body;
-
+    console.log("Auth object:", req.auth);
+  console.log("2")
   try {
     // CREATE A NEW CHAT
     const newChat = new Chat({
