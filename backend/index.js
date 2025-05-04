@@ -156,6 +156,10 @@ app.get("/api/chats/:id", clerkMiddleware(), async (req, res) => {
   }
 });
   
+app.get('/', (req, res) => {
+  res.send('API is running...');
+});
+
 
 
 
