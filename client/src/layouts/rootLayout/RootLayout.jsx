@@ -20,7 +20,7 @@ const RootLayout = () => {
           <header>
             <Link to="/" className="logo">
               <img src="/logo.png" alt="LAMA AI Logo" />
-              <span>LAMA AI</span>
+              <span>NERD AI</span>
             </Link>
             <div className="user">
               <SignedIn>
