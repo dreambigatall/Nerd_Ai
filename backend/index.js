@@ -43,8 +43,17 @@ app.get("/api/upload", (req, res) => {
 
 
 app.post("/api/chats", clerkMiddleware(), async (req, res) => {
+  console.log("1")
   const { userId } = req.auth;
   const { text } = req.body;
+  console.log("Auth object:", req.auth); // <-- Add this line
+  
+  console.log("2")
+
+  if (!userId) { // Add this check for explicit error handling
+      console.error("User ID is missing after Clerk middleware!");
+      return res.status(401).send("Authentication failed: User ID not found.");
+  }
 
   try {
     // CREATE A NEW CHAT
